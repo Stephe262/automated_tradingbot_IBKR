@@ -30,16 +30,13 @@ total_funds = {"account_id": None, "account_id": None, "account_id": None, "acco
 new_ticker = {"account_id": [[None, None]], "account_id": [[None, None]], "account_id": [[None, None]],
               "account_id": [[None, None], [None, None], [None, None], [None, None], [None, None], [None, None]]}
 
-# temp_short_stocks = copy.deepcopy(short_stocks)
-# temp_long_stocks = copy.deepcopy(long_stocks)
-
 # Load env file for Slack
 env_path = Path('.') / '.env'
 load_dotenv(dotenv_path=env_path)
 
 # # Set the directory path to the desktop for Pickling
-desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-folder_name = "saved_variables"
+desktop_path = os.path.join(os.path.expanduser("~"), "Where the folder is stored")
+folder_name = "name of your folder for your pickled objects"
 folder_path = os.path.join(desktop_path, folder_name)
 
 try:
