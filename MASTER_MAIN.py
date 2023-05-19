@@ -13,30 +13,22 @@ import os
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
-# U6242125-----14 Picks (Buy Open / Sell Close) 107% / -25%
-
-# U9635870-----29 Picks (Buy Open / Sell Close) 102% / -20%
-
-# U9635858-----29 Stocks Shorted (Short Open / Buy Close) 104% / -13%
-
-# U9635876-----Short US (Short Open / Buy Close) 317% / -34%
-
 #### Variables ####
 # Number of Stocks Held Dictionary
-num_stocks_held = {"U6242125": 0, "U9635870": 0, "U9635858": 0, "U9635876": 0}
+num_stocks_held = {"account_id": 0, "account_id": 0, "account_id": 0, "account_id": 0}
 
 # Dictionary to store the short_stocks being held and their Quantity and days held
-short_stocks = {"U9635858": [[None, None, None], [None, None, None]], "U9635876": [[None, None, None], [None, None, None], [None, None, None],
+short_stocks = {"account_id": [[None, None, None], [None, None, None]], "account_id": [[None, None, None], [None, None, None], [None, None, None],
                                                           [None, None, None], [None, None, None], [None, None, None]]}
 # Dictionary to store the long stocks being held and their Quantity and days held so far
-long_stocks = {"U6242125": [[None, None, None], [None, None, None]], "U9635870": [[None, None, None], [None, None, None]]}
+long_stocks = {"account_id": [[None, None, None], [None, None, None]], "account_id": [[None, None, None], [None, None, None]]}
 
 # Funds per Account
-total_funds = {"U6242125": None, "U9635870": None, "U9635858": None, "U9635876": None}
+total_funds = {"account_id": None, "account_id": None, "account_id": None, "account_id": None}
 
 # New Tickers with their open price
-new_ticker = {"U6242125": [[None, None]], "U9635870": [[None, None]], "U9635858": [[None, None]],
-              "U9635876": [[None, None], [None, None], [None, None], [None, None], [None, None], [None, None]]}
+new_ticker = {"account_id": [[None, None]], "account_id": [[None, None]], "account_id": [[None, None]],
+              "account_id": [[None, None], [None, None], [None, None], [None, None], [None, None], [None, None]]}
 
 # temp_short_stocks = copy.deepcopy(short_stocks)
 # temp_long_stocks = copy.deepcopy(long_stocks)
@@ -70,13 +62,13 @@ def handle_alerts(account_id, email_txt):
             return msg.get_payload(None, True)
 
     imap_server = 'imap.gmail.com'
-    email_address = "nstephenson262@gmail.com"
-    password = "lgqhqwnlzeamcdwu"
+    email_address = "your_email"
+    password = "gmail_password" #this is not your normal password
     mail = imaplib.IMAP4_SSL(imap_server)
     mail.login(email_address, password)
     mail.select("Inbox")
     key = "FROM"
-    value = 'contact@genovest.com'
+    value = 'contact@genovest.com' #I use Genovest to create my trading strategies and then parse my emails every morning where I am notified which stocks to sell/buy
 
     # Get the latest email
     status, data = mail.search(None, key, value)
@@ -113,7 +105,8 @@ def handle_alerts(account_id, email_txt):
                     pass
         else:
             pass
-    if account_id == 'U6242125' or account_id == 'U9635870':
+          # These are my long strategy accounts
+    if account_id == 'account_id' or account_id == 'account_id':
         total_stocks = 0
         for key, value in long_stocks.items():
             if key == account_id:
@@ -122,7 +115,8 @@ def handle_alerts(account_id, email_txt):
                         total_stocks += 1
                 # print(f"Total stocks held for {key} is {total_stocks}")
                 num_stocks_held[key] = total_stocks
-    elif account_id == 'U9635858' or account_id == 'U9635876':
+          # These are my short strategy accounts
+    elif account_id == 'account_id' or account_id == 'account_id':
         total_stocks = 0
         for key, value in short_stocks.items():
             if key == account_id:
@@ -139,7 +133,7 @@ def handle_alerts(account_id, email_txt):
             data_name = str(funds[x][1])
             data_account_value = str(funds[x][2])
             if data_name == "TotalCashValue":
-                if account_id == 'U9635876':
+                if account_id == 'account_id':
                     data_account_value = float(data_account_value)
                     print(f'{email_txt} has: ${data_account_value}')
                     if num_stocks_held[account_id] == 6:
@@ -163,7 +157,7 @@ def handle_alerts(account_id, email_txt):
         now = datetime.datetime.now()
         today = now.strftime("%Y%m%d")
         client = slack.WebClient(token=os.environ['SLACK_TOKEN'])
-        if account_id == 'U6242125' or account_id == 'U9635870':
+        if account_id == 'account_id' or account_id == 'account_id':
             for idx, (key1, value1) in enumerate(new_ticker.items()):
                 if key1 == account_id:
                     for new_stock, new_stock_price in value1:
@@ -260,7 +254,7 @@ def handle_alerts(account_id, email_txt):
                                 if key3 == account_id:
                                     for idx, (ticker, quant, held) in enumerate(value3):
                                         if ticker is None:
-                                            price = [tick_price[1] for tick_price in new_ticker['U9635876'] if tick_price[0] == new_stock]
+                                            price = [tick_price[1] for tick_price in new_ticker[account_id] if tick_price[0] == new_stock]
                                             print(price)
                                             limit_price = round((price[0] * 1.0015), 2)
                                             total_quant = int((float(total_funds[account_id]) * .95) / limit_price)
@@ -328,10 +322,10 @@ while True:
     elif now.hour==7 and now.minute==30:
         time.sleep(2)
         print(f'Running Function at {now.hour}:{now.minute}:{now.second}:{now.microsecond}')
-        handle_alerts("U6242125", "14 Picks (Buy Open / Sell Close) 107% / -25%")
-        handle_alerts("U9635870", "29 Picks (Buy Open / Sell Close) 102% / -20%")
-        handle_alerts("U9635858", "29 Stocks Shorted (Short Open / Buy Close) 104% / -13%")
-        handle_alerts("U9635876", "Short US (Short Open / Buy Close) 317% / -34%")
+        handle_alerts("account_id", "name of your strategy within Genovest")
+        handle_alerts("account_id", "name of your strategy within Genovest")
+        handle_alerts("account_id", "name of your strategy within Genovest")
+        handle_alerts("account_id", "name of your strategy within Genovest")
 
         with open(os.path.join(folder_path, "long_stocks.pickle"), "wb") as f:
             pickle.dump(long_stocks, f)
@@ -347,27 +341,3 @@ while True:
     else:
         print(f'Greater than 7:31AM')
         break
-
-
-############ FOR TESTING PURPOSES ##############
-#
-# handle_alerts("U6242125", "14 Picks (Buy Open / Sell Close) 107% / -25%")
-# handle_alerts("U9635870", "29 Picks (Buy Open / Sell Close) 102% / -20%")
-# handle_alerts("U9635858", "29 Stocks Shorted (Short Open / Buy Close) 104% / -13%")
-# handle_alerts("U9635876", "Short US (Short Open / Buy Close) 317% / -34%")
-#
-# # Copy temp_stocks over to short_stocks dictionary
-# # short_stocks = copy.deepcopy(temp_short_stocks)
-#
-# with open(os.path.join(folder_path, "long_stocks.pickle"), "wb") as f:
-#     pickle.dump(long_stocks, f)
-#
-# with open(os.path.join(folder_path, "short_stocks.pickle"), "wb") as f:
-#     pickle.dump(short_stocks, f)
-#
-# action_taken_message = f'       ACTION TAKEN IN ALL ACCOUNTS'
-# client = slack.WebClient(token=os.environ['SLACK_TOKEN'])
-# # Post the message to Slack
-# client.chat_postMessage(channel="#updates", text=action_taken_message)
-
-####################
